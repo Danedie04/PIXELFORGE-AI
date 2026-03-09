@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixelForge AI — Transform Photos Into Pixel Art</title>
+<link rel="stylesheet" href="style.css" />
+<script src="script.js"></script>
+</head>
+<body>
+
+<!-- Backgrounds -->
+<canvas id="particle-canvas"></canvas>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PIXELFORGE<span style="color:#fff;"> AI</span></div>
+  <ul class="nav-links">
+    <li><a href="#hero">HOME</a></li>
+    <li><a href="#upload">CREATE</a></li>
+    <li><a href="#features">FEATURES</a></li>
+  </ul>
+  <div class="nav-badge">v2.0 BETA</div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="floating-cubes" id="cubes-container"></div>
+  
+  <div class="hero-eyebrow">◈ NEXT-GEN PIXEL ART ENGINE ◈</div>
+  
+  <h1 class="hero-title">
+    <span class="line1">TRANSFORM PHOTOS</span>
+    <span class="line2">INTO PIXEL ART</span>
+  </h1>
+  
+  <p class="hero-sub">
+    Create retro game style pixel art instantly.<br>
+    Powered by advanced image processing. Zero compromise.
+  </p>
+  
+  <a href="#upload" class="btn-primary">
+    <span>⬡</span>
+    GENERATE PIXEL ART
+    <span>⬡</span>
+  </a>
+</section>
+
+<!-- ── UPLOAD ── -->
+<section id="upload" class="fade-section">
+  <h2 class="section-title">UPLOAD YOUR IMAGE</h2>
+  <p class="section-sub">// DRAG & DROP OR CLICK TO SELECT //</p>
+  
+  <div class="glass-panel upload-zone" id="upload-zone">
+    <span class="upload-icon">🖼️</span>
+    <h3>DROP IMAGE HERE</h3>
+    <p>Click anywhere in this zone to browse files</p>
+    <div class="format-tags">
+      <span class="format-tag">PNG</span>
+      <span class="format-tag">JPG</span>
+      <span class="format-tag">WEBP</span>
+      <span class="format-tag">GIF</span>
+    </div>
+    <input type="file" id="file-input" accept="image/*">
+  </div>
+</section>
+
+<!-- ── STUDIO ── -->
+<section id="studio">
+  <h2 class="section-title" style="margin-bottom:8px;">PIXELFORGE STUDIO</h2>
+  <p class="section-sub">// CONFIGURE YOUR PIXEL ART //</p>
+  
+  <div class="studio-grid">
+    <!-- Controls -->
+    <div class="glass-panel controls-panel">
+      
+      <div class="ctrl-group">
+        <label>◈ PIXEL SIZE</label>
+        <div class="ctrl-row">
+          <span>1px</span>
+          <span class="val" id="pixel-val">8px</span>
+          <span>64px</span>
+        </div>
+        <input type="range" id="pixel-slider" min="2" max="64" value="8">
+      </div>
+
+      <div class="ctrl-group">
+        <label>◈ COLOR PALETTE</label>
+        <div class="palette-grid">
+          <button class="palette-btn active" data-palette="8bit">8-BIT</button>
+          <button class="palette-btn" data-palette="16bit">16-BIT</button>
+          <button class="palette-btn" data-palette="gameboy">GAMEBOY</button>
+          <button class="palette-btn" data-palette="nes">NES</button>
+          <button class="palette-btn" data-palette="minecraft">MINECRAFT</button>
+          <button class="palette-btn" data-palette="anime">ANIME</button>
+        </div>
+        <div class="swatch-row" id="swatch-row"></div>
+      </div>
+
+      <div class="ctrl-group">
+        <label>◈ RETRO FILTER</label>
+        <select id="filter-select">
+          <option value="none">— NONE —</option>
+          <option value="scanlines">SCANLINES</option>
+          <option value="crt">CRT GLOW</option>
+          <option value="dither">DITHERING</option>
+          <option value="outline">PIXEL OUTLINE</option>
+          <option value="shadow">DROP SHADOW</option>
+        </select>
+      </div>
+
+      <div class="ctrl-group">
+        <label>◈ AI PIXEL STYLES</label>
+        <div class="ai-style-grid">
+          <button class="ai-btn" data-style="avatar">PIXEL AVATAR</button>
+          <button class="ai-btn" data-style="minecraft">MC SKIN</button>
+          <button class="ai-btn" data-style="retro">RETRO CHAR</button>
+          <button class="ai-btn" data-style="portrait">PORTRAIT</button>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <label>◈ PIXEL EDITOR</label>
+        <div class="color-row">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">COLOR:</span>
+          <input type="color" id="edit-color" value="#00f5ff">
+          <button class="tool-btn" id="editor-toggle">EDITOR MODE</button>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="generate-btn">
+        ⬡ GENERATE PIXEL ART ⬡
+      </button>
+
+      <div class="ctrl-group">
+        <label>◈ EXPORT</label>
+        <div class="export-row">
+          <button class="export-btn" id="export-png">↓ PNG</button>
+          <button class="export-btn" id="export-svg">↓ SVG</button>
+          <button class="export-btn" id="export-pdf">↓ PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="glass-panel canvas-panel">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="btn-preview">PREVIEW</button>
+        <button class="tool-btn" id="btn-original">ORIGINAL</button>
+        <button class="tool-btn" id="btn-grid">GRID OVERLAY</button>
+        <button class="tool-btn" id="btn-zoom-in">ZOOM +</button>
+        <button class="tool-btn" id="btn-zoom-out">ZOOM −</button>
+        <span class="zoom-info" id="zoom-display">100%</span>
+      </div>
+
+      <div class="canvas-container" id="canvas-container">
+        <div class="canvas-placeholder" id="canvas-placeholder">
+          <span class="big">◈</span>
+          Upload an image to begin<br>
+          <span style="opacity:0.5;font-size:11px;">Awaiting input signal…</span>
+        </div>
+        <canvas id="output-canvas" style="display:none;"></canvas>
+        <div class="loading-overlay" id="loading-overlay">
+          <div style="font-size:48px;">⬡</div>
+          <div class="loading-text" id="loading-text">PROCESSING…</div>
+          <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <span><span class="status-dot"></span><span id="status-text">READY</span></span>
+        <span id="canvas-info">—</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features" class="fade-section">
+  <h2 class="section-title">FORGE CAPABILITIES</h2>
+  <p class="section-sub">// WHAT PIXELFORGE AI CAN DO //</p>
+
+  <div class="features-grid">
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">🎨</span>
+      <h3>PALETTE ENGINE</h3>
+      <p>6 curated retro palettes — 8-bit, GameBoy, NES, Minecraft, and more. Reduce millions of colors to authentic pixel art palettes.</p>
+    </div>
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">🤖</span>
+      <h3>AI STYLE MODES</h3>
+      <p>Transform portraits into pixel avatars, Minecraft skins, retro game characters, or stylized pixel portraits with one click.</p>
+    </div>
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">✏️</span>
+      <h3>PIXEL EDITOR</h3>
+      <p>Click individual pixels to change colors. Fine-tune details and fix artifacts after generation with precision editing tools.</p>
+    </div>
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">📐</span>
+      <h3>RETRO FILTERS</h3>
+      <p>Apply authentic retro effects: scanlines, CRT glow, dithering patterns, pixel outlines, and drop shadows.</p>
+    </div>
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">⬇️</span>
+      <h3>EXPORT OPTIONS</h3>
+      <p>Download as PNG with transparency, scalable SVG, or PDF pixel grid template. Perfect for print and game development.</p>
+    </div>
+    <div class="glass-panel feature-card">
+      <span class="feature-icon">🔍</span>
+      <h3>LIVE PREVIEW</h3>
+      <p>Real-time pixel art rendering with zoom controls and optional grid overlay. See every pixel at any scale.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="logo-text">PIXELFORGE AI</span>
+  TRANSFORM · FORGE · CREATE<br>
+  <span style="margin-top:8px;display:block;opacity:0.4;">© 2026 PixelForge AI — Built with Canvas API & Pure JavaScript</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+
+</body>
+</html>
